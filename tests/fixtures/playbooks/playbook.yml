@@ -1,0 +1,8 @@
+---
+- name: Test playbook with issues
+  hosts: all
+  tasks:
+    - name: Run a command
+      command: echo hello
+    - name: Run a shell command
+      shell: ls -la

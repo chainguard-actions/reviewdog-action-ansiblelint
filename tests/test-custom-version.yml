@@ -1,0 +1,30 @@
+name: Test custom ansiblelint version
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/main
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          github_token: "dummy-token"
+          reporter: "local"
+          filter_mode: "nofilter"
+          fail_level: "none"
+          ansiblelint_version: "24.12.2"
+          workdir: "."
+          ansiblelint_flags: "--profile min pristine/reviewdog--action-ansiblelint/v1.18.0/testdata/test.yml"
+      - name: Assert correct ansible-lint version is installed
+        run: |
+          INSTALLED_VERSION=$(ansible-lint --version 2>&1 | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          echo "Installed ansible-lint version: $INSTALLED_VERSION"
+          if [ "$INSTALLED_VERSION" != "24.12.2" ]; then
+            echo "FAIL: expected ansible-lint version 24.12.2, got $INSTALLED_VERSION"
+            exit 1
+          fi
+          echo "PASS"
