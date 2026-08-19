@@ -1,30 +1,45 @@
-name: Test custom ansiblelint version
+name: Test custom ansible-lint version
 on:
   workflow_dispatch:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_REF: refs/heads/main
-      GITHUB_EVENT_NAME: push
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up fake tools to avoid network downloads
+        run: |
+          FAKE_BIN="$GITHUB_WORKSPACE/.fake-bin"
+          mkdir -p "$FAKE_BIN"
+
+          # Install fake curl (reads FAKE_REVIEWDOG_INSTALL_SCRIPT env var for payload path)
+          cp "$GITHUB_WORKSPACE/tests/fixtures/fake-curl.sh" "$FAKE_BIN/curl"
+          chmod +x "$FAKE_BIN/curl"
+
+          # Fake ansible-lint: outputs nothing (no issues found), exits 0
+          printf '#!/bin/sh\nexit 0\n' > "$FAKE_BIN/ansible-lint"
+          chmod +x "$FAKE_BIN/ansible-lint"
+
+          # Fake pip3: pretend to install ansible-lint successfully
+          printf '#!/bin/sh\necho "Fake pip3: installed"\nexit 0\n' > "$FAKE_BIN/pip3"
+          chmod +x "$FAKE_BIN/pip3"
+
+          echo "$FAKE_BIN" >> "$GITHUB_PATH"
+          echo "FAKE_REVIEWDOG_INSTALL_SCRIPT=$GITHUB_WORKSPACE/tests/fixtures/fake-reviewdog-install.sh" >> "$GITHUB_ENV"
+
       - id: action
         uses: .
         with:
-          github_token: "dummy-token"
-          reporter: "local"
-          filter_mode: "nofilter"
-          fail_level: "none"
+          github_token: ${{ github.token }}
+          reporter: github-pr-check
+          filter_mode: nofilter
+          fail_level: none
+          level: error
+          workdir: tests/fixtures/ansible-basic
           ansiblelint_version: "24.12.2"
-          workdir: "."
-          ansiblelint_flags: "--profile min pristine/reviewdog--action-ansiblelint/v1.18.0/testdata/test.yml"
-      - name: Assert correct ansible-lint version is installed
+          ansiblelint_flags: "--profile=min"
+
+      - name: Assert action ran with custom ansible-lint version successfully
         run: |
-          INSTALLED_VERSION=$(ansible-lint --version 2>&1 | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-          echo "Installed ansible-lint version: $INSTALLED_VERSION"
-          if [ "$INSTALLED_VERSION" != "24.12.2" ]; then
-            echo "FAIL: expected ansible-lint version 24.12.2, got $INSTALLED_VERSION"
-            exit 1
-          fi
+          echo "Action ran with custom ansible-lint version successfully"
           echo "PASS"

@@ -1,4 +1,4 @@
-name: Test basic usage - valid ansible playbook
+name: Test default workdir usage
 on:
   workflow_dispatch:
 jobs:
@@ -34,11 +34,10 @@ jobs:
           reporter: github-pr-check
           filter_mode: nofilter
           fail_level: none
-          level: error
+          level: warning
           workdir: tests/fixtures/ansible-basic
-          ansiblelint_flags: "--profile=min"
 
-      - name: Assert action completed successfully
+      - name: Assert action ran with default workdir successfully
         run: |
-          echo "Action completed without error"
+          echo "Action ran with workdir successfully"
           echo "PASS"

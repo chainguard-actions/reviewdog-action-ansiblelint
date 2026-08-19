@@ -6,8 +6,10 @@ TEMP_PATH="$(mktemp -d)"
 PATH="${TEMP_PATH}:$PATH"
 
 echo '::group::🐶 Installing reviewdog ... https://github.com/reviewdog/reviewdog'
-curl -sfL -o "${TEMP_PATH}/install.sh" https://raw.githubusercontent.com/reviewdog/reviewdog/fd59714416d6d9a1c0692d872e38e7f8448df4fc/install.sh
-sh "${TEMP_PATH}/install.sh" -b "${TEMP_PATH}" "${REVIEWDOG_VERSION}" 2>&1
+INSTALL_SCRIPT="$(mktemp)"
+curl -sfL -o "${INSTALL_SCRIPT}" https://raw.githubusercontent.com/reviewdog/reviewdog/fd59714416d6d9a1c0692d872e38e7f8448df4fc/install.sh
+sh "${INSTALL_SCRIPT}" -b "${TEMP_PATH}" "${REVIEWDOG_VERSION}" 2>&1
+rm -f "${INSTALL_SCRIPT}"
 echo '::endgroup::'
 
 echo '::group:: Installing ansible-lint ... https://github.com/ansible/ansible-lint'

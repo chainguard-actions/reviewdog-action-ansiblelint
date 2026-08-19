@@ -1,24 +1,44 @@
-name: Test fail_level none does not fail on lint errors
+name: Test fail_level none - always exits 0
 on:
   workflow_dispatch:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_REF: refs/heads/main
-      GITHUB_EVENT_NAME: push
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up fake tools to avoid network downloads
+        run: |
+          FAKE_BIN="$GITHUB_WORKSPACE/.fake-bin"
+          mkdir -p "$FAKE_BIN"
+
+          # Install fake curl (reads FAKE_REVIEWDOG_INSTALL_SCRIPT env var for payload path)
+          cp "$GITHUB_WORKSPACE/tests/fixtures/fake-curl.sh" "$FAKE_BIN/curl"
+          chmod +x "$FAKE_BIN/curl"
+
+          # Fake ansible-lint: outputs a lint warning to test that fail_level=none still exits 0
+          printf '#!/bin/sh\necho "playbook.yml:1: [warning] some-rule Some lint warning"\nexit 2\n' > "$FAKE_BIN/ansible-lint"
+          chmod +x "$FAKE_BIN/ansible-lint"
+
+          # Fake pip3: pretend to install ansible-lint successfully
+          printf '#!/bin/sh\necho "Fake pip3: installed"\nexit 0\n' > "$FAKE_BIN/pip3"
+          chmod +x "$FAKE_BIN/pip3"
+
+          echo "$FAKE_BIN" >> "$GITHUB_PATH"
+          echo "FAKE_REVIEWDOG_INSTALL_SCRIPT=$GITHUB_WORKSPACE/tests/fixtures/fake-reviewdog-install.sh" >> "$GITHUB_ENV"
+
       - id: action
         uses: .
         with:
-          github_token: "dummy-token"
-          reporter: "local"
-          filter_mode: "nofilter"
-          fail_level: "none"
-          workdir: "."
-          ansiblelint_flags: "--profile min pristine/reviewdog--action-ansiblelint/v1.18.0/tests/fixtures/playbooks/playbook.yml"
-      - name: Assert action succeeded with fail_level none
+          github_token: ${{ github.token }}
+          reporter: github-pr-check
+          filter_mode: nofilter
+          fail_level: none
+          fail_on_error: "false"
+          level: error
+          workdir: tests/fixtures/ansible-basic
+
+      - name: Assert action exited with code 0 (fail_level=none)
         run: |
-          echo "Action completed with exit code 0 as expected (fail_level=none)"
+          echo "Action completed with fail_level=none - exit code should always be 0"
           echo "PASS"
