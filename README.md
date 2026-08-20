@@ -8,7 +8,9 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
+| v1 | [`v1`](https://github.com/chainguard-actions/reviewdog-action-ansiblelint/tree/v1) | [`4416d8e`](https://github.com/reviewdog/action-ansiblelint/commit/4416d8eb70bc345d589ff60817395e4bdaf1981b) |
 | v1.17.0 | [`v1.17.0`](https://github.com/chainguard-actions/reviewdog-action-ansiblelint/tree/v1.17.0) | [`5b8ca4b`](https://github.com/reviewdog/action-ansiblelint/commit/5b8ca4b12dcbcdf63d4739dacd90609abafe8924) |
+| v1.18 | [`v1.18`](https://github.com/chainguard-actions/reviewdog-action-ansiblelint/tree/v1.18) | [`4416d8e`](https://github.com/reviewdog/action-ansiblelint/commit/4416d8eb70bc345d589ff60817395e4bdaf1981b) |
 | v1.18.0 | [`v1.18.0`](https://github.com/chainguard-actions/reviewdog-action-ansiblelint/tree/v1.18.0) | [`4416d8e`](https://github.com/reviewdog/action-ansiblelint/commit/4416d8eb70bc345d589ff60817395e4bdaf1981b) |
 
 ## Privacy
