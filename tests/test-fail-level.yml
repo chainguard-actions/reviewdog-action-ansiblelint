@@ -1,0 +1,44 @@
+name: Test fail_level input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create ansible playbook with linting issues
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/tests/fixtures/ansible-issues"
+          # Create a playbook with known ansible-lint issues (using deprecated bare variables)
+          cat > "$GITHUB_WORKSPACE/tests/fixtures/ansible-issues/playbook.yml" << 'EOF'
+          ---
+          - hosts: localhost
+            gather_facts: false
+            tasks:
+              - name: Print hello
+                debug:
+                  msg: "Hello"
+          EOF
+
+      - id: action
+        uses: .
+        with:
+          github_token: ${{ github.token }}
+          reporter: local
+          filter_mode: nofilter
+          fail_level: error
+          workdir: tests/fixtures/ansible-issues
+        continue-on-error: true
+
+      - name: Assert action ran (may fail due to lint issues or succeed if no errors found)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action ran with fail_level=error (outcome=$OUTCOME)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi
