@@ -14,6 +14,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 | v1.18.0 | [`v1.18.0`](https://github.com/chainguard-actions/reviewdog-action-ansiblelint/tree/v1.18.0) | [`4416d8e`](https://github.com/reviewdog/action-ansiblelint/commit/4416d8eb70bc345d589ff60817395e4bdaf1981b) | [`HARDENING.md`](https://github.com/chainguard-actions/reviewdog-action-ansiblelint/blob/v1.18.0/HARDENING.md) |
 | v1.19.0 | [`v1.19.0`](https://github.com/chainguard-actions/reviewdog-action-ansiblelint/tree/v1.19.0) | [`af428cf`](https://github.com/reviewdog/action-ansiblelint/commit/af428cf01a64570d56247409b5c193650dac5aad) | [`HARDENING.md`](https://github.com/chainguard-actions/reviewdog-action-ansiblelint/blob/v1.19.0/HARDENING.md) |
 | v1.20.0 | [`v1.20.0`](https://github.com/chainguard-actions/reviewdog-action-ansiblelint/tree/v1.20.0) | [`57a0721`](https://github.com/reviewdog/action-ansiblelint/commit/57a0721547b93e9925bd05bf20ea17810bb3cff7) | [`HARDENING.md`](https://github.com/chainguard-actions/reviewdog-action-ansiblelint/blob/v1.20.0/HARDENING.md) |
+| v1.21.0 | [`v1.21.0`](https://github.com/chainguard-actions/reviewdog-action-ansiblelint/tree/v1.21.0) | [`931601f`](https://github.com/reviewdog/action-ansiblelint/commit/931601fec9976c70b82ee83fd815df9f4d97c179) | [`HARDENING.md`](https://github.com/chainguard-actions/reviewdog-action-ansiblelint/blob/v1.21.0/HARDENING.md) |
 
 ## Privacy
 
