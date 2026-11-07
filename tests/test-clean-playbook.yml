@@ -1,0 +1,37 @@
+name: Test clean playbook passes with fail_level any
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      PIP_BREAK_SYSTEM_PACKAGES: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Ensure pip3 is available
+        run: |
+          if ! command -v pip3 >/dev/null 2>&1; then
+            SUDO=""; [ "$(id -u)" != "0" ] && SUDO="sudo"
+            $SUDO apt-get update -y && $SUDO apt-get install -y python3-pip
+          fi
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          pip3 --version
+      - id: action
+        uses: .
+        with:
+          workdir: tests/fixtures/clean
+          ansiblelint_flags: playbook.yml
+          reporter: local
+          filter_mode: nofilter
+          level: error
+          fail_level: any
+      - name: Assert action succeeded
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "success" ]; then
+            echo "FAIL: expected success for a clean playbook"
+            exit 1
+          fi
+          echo "PASS"
